@@ -1,0 +1,4 @@
+# Placeholder for module icon
+# Add a 256x256 PNG icon named icon.png in this directory
+# This file can be deleted after adding the actual icon
+

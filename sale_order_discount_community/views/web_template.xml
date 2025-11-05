@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal templates for displaying discounts on customer portal -->
+    <template id="portal_my_quotation_inherit" inherit_id="sale.sale_order_portal_content" name="Global Discount Portal">
+        <xpath expr="//div[@id='total']" position="before">
+            <div class="clearfix" t-if="sale_order.global_discount_ids">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h5 class="mb-2">Applied Discounts</h5>
+                        <t t-foreach="sale_order.global_discount_ids" t-as="discount">
+                            <div>
+                                <strong><span t-field="discount.name"/></strong>: 
+                                <span t-field="discount.percent"/> 
+                                (Total: <span t-field="discount.total_percent"/>%)
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
+
