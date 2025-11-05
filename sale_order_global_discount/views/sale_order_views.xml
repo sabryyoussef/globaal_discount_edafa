@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sale Order Form View -->
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.global.discount</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add discount applies to and global discount field after payment term -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="discount_applies_to" widget="radio" 
+                       readonly="state != 'draft' and state != 'sent'"/>
+                <field name="global_discount_ids" widget="many2many_tags"
+                       options="{'color_field': 'id'}"
+                       placeholder="Select global discounts..."
+                       readonly="state != 'draft' and state != 'sent'"/>
+            </xpath>
+            
+            <!-- Add discount method and amount columns to order lines -->
+            <xpath expr="//field[@name='order_line']//field[@name='price_unit']" position="before">
+                <field name="discount_method" 
+                       column_invisible="parent.discount_applies_to != 'line'"
+                       optional="show"/>
+                <field name="discount_amount_value" 
+                       column_invisible="parent.discount_applies_to != 'line'"
+                       optional="show"/>
+            </xpath>
+            
+            <!-- Add line discount total before tax_totals -->
+            <xpath expr="//group[@name='sale_total']/field[@name='tax_totals']" position="before">
+                <field name="line_discount_total" 
+                       widget="monetary" 
+                       options="{'currency_field': 'currency_id'}"
+                       invisible="discount_applies_to != 'line' or line_discount_total == 0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sale Order Search View -->
+    <record id="view_sales_order_filter" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.global.discount</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter string="With Global Discounts" name="has_global_discounts"
+                        domain="[('global_discount_ids', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

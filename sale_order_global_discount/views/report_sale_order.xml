@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Sale Order Report to show global discounts -->
+    <template id="report_saleorder_document_inherit" inherit_id="sale.report_saleorder_document">
+        <!-- Add discount information after order lines table -->
+        <xpath expr="//div[@id='total']" position="before">
+            <div class="clearfix" t-if="doc.global_discount_ids">
+                <div class="row">
+                    <div class="col-8 text-end">
+                        <strong>Global Discounts Applied:</strong>
+                    </div>
+                    <div class="col-4">
+                        <span t-foreach="doc.global_discount_ids" t-as="discount">
+                            <span t-field="discount.name"/> (<span t-field="discount.percent"/>)<br/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix" t-if="doc.global_discount_ids and doc.amount_untaxed_before_discount">
+                <div class="row">
+                    <div class="col-8 text-end">
+                        <strong>Amount Before Discount:</strong>
+                    </div>
+                    <div class="col-4">
+                        <span t-field="doc.amount_untaxed_before_discount" 
+                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8 text-end">
+                        <strong>Discount Amount:</strong>
+                    </div>
+                    <div class="col-4">
+                        <span t-field="doc.amount_discount_untaxed" 
+                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Extend Quotation Report -->
+    <template id="report_saleorder_pro_forma_document_inherit" inherit_id="sale.report_saleorder_pro_forma">
+        <xpath expr="//t[@t-call='sale.report_saleorder_document']" position="attributes">
+            <attribute name="t-call">sale.report_saleorder_document</attribute>
+        </xpath>
+    </template>
+</odoo>
+

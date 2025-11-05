@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_res_partner_global_discount_list" model="ir.ui.view">
+        <field name="name">res.partner.global.discount.list</field>
+        <field name="model">res.partner.global_discount</field>
+        <field name="arch" type="xml">
+            <list string="Global Discounts">
+                <field name="name"/>
+                <field name="percent"/>
+                <field name="total_percent"/>
+                <field name="partner_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_res_partner_global_discount_form" model="ir.ui.view">
+        <field name="name">res.partner.global.discount.form</field>
+        <field name="model">res.partner.global_discount</field>
+        <field name="arch" type="xml">
+            <form string="Global Discount">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_partners" type="object" 
+                                class="oe_stat_button" icon="fa-users"
+                                invisible="partner_count == 0">
+                            <field name="partner_count" widget="statinfo" string="Partners"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g., VIP Discount"/>
+                            <field name="discount_type" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="percent" placeholder="e.g., 10 or 10+5"/>
+                            <field name="total_percent" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Partners" name="partners">
+                            <field name="partner_ids" mode="list">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                    <field name="phone"/>
+                                    <field name="city"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Help" name="help">
+                            <group>
+                                <div style="margin: 10px;">
+                                    <h4>Discount Format</h4>
+                                    <p>Enter discount percentages in one of these formats:</p>
+                                    <ul>
+                                        <li><strong>Simple discount:</strong> "10" = 10% discount</li>
+                                        <li><strong>Compound discount:</strong> "10+5" = 10% discount, then 5% on the remainder (total: 14.5%)</li>
+                                        <li><strong>Multiple discounts:</strong> "20+10+5" = applied sequentially</li>
+                                    </ul>
+                                    <p><em>The Total Percent field shows the calculated combined discount.</em></p>
+                                    
+                                    <h4 class="mt-3">Discount Application</h4>
+                                    <ul>
+                                        <li><strong>On Order Lines:</strong> Discount is applied to each product line individually (shown in Disc.% column)</li>
+                                        <li><strong>On Order Total:</strong> Discount is applied as a separate discount line at the end of the order</li>
+                                    </ul>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_res_partner_global_discount_search" model="ir.ui.view">
+        <field name="name">res.partner.global.discount.search</field>
+        <field name="model">res.partner.global_discount</field>
+        <field name="arch" type="xml">
+            <search string="Global Discounts">
+                <field name="name" string="Name"
+                       filter_domain="['|', ('name', 'ilike', self), ('percent', 'ilike', self)]"/>
+                <field name="percent"/>
+                <filter string="Has Partners" name="has_partners" 
+                        domain="[('partner_ids', '!=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Total Percent" name="group_total_percent" 
+                            context="{'group_by': 'total_percent'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_res_partner_global_discount" model="ir.actions.act_window">
+        <field name="name">Global Discounts</field>
+        <field name="res_model">res.partner.global_discount</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first global discount!
+            </p>
+            <p>
+                Global discounts can be applied to partners and will automatically
+                be used in their sales orders and invoices.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_res_partner_global_discount"
+              name="Global Discounts"
+              parent="sale.menu_sales_config"
+              action="action_res_partner_global_discount"
+              sequence="50"/>
+</odoo>
+
